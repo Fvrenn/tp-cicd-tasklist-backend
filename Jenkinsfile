@@ -27,16 +27,15 @@ pipeline {
 
         stage('Analyse SonarQube') {
             steps {
-                withSonarQubeEnv('sonarqube-server-1') {
-                    withCredentials([string(credentialsId: 'timotheh-sonar-token', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                            npx sonar-scanner \
-                                -Dsonar.projectKey=timotheh-tasklist-frontend \
-                                -Dsonar.projectName="timotheh - TaskList Frontend" \
-                                -Dsonar.token=$SONAR_TOKEN \
-                                -Dsonar.qualitygate.wait=true
-                        '''
-                    }
+                withCredentials([string(credentialsId: 'timotheh-sonar-token', variable: 'SONAR_TOKEN')]) {
+                    sh '''
+                        npx sonar-scanner \
+                            -Dsonar.host.url=https://sonarqube.cicd.kits.ext.educentre.fr \
+                            -Dsonar.projectKey=timotheh-tasklist-backend \
+                            -Dsonar.projectName="timotheh - TaskList Backend" \
+                    -Dsonar.token=$SONAR_TOKEN \
+                    -Dsonar.qualitygate.wait=true
+                    '''
                 }
             }
         }
