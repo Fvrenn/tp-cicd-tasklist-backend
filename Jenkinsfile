@@ -40,12 +40,13 @@ pipeline {
 
         stage('Analyse SonarQube') {
             steps {
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv('sonarqube-server-1') {
                     withCredentials([string(credentialsId: 'timotheh-sonar-token', variable: 'SONAR_TOKEN')]) {
                         sh 'npx sonar-scanner -Dsonar.token=$SONAR_TOKEN'
                     }
                 }
             }
+        }
         }
 
         stage('Quality Gate') {
