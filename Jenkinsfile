@@ -29,7 +29,7 @@ pipeline {
 
         stage('Tests end-to-end') {
             steps {
-                sh 'npm run test:e2e:coverage'
+                sh 'npm run test:e2e'
             }
             post {
                 always {
