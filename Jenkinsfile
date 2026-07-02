@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('timotheh-dockerhub-password')
-        IMAGE_NAME = 'timotheh/tasklist-backend'
+        IMAGE_NAME = 'timotheh/tasklist-frontend'
         IMAGE_TAG = "${IMAGE_NAME}:${BUILD_NUMBER}"
     }
 
@@ -11,25 +11,12 @@ pipeline {
         stage('Installation des dépendances') {
             steps {
                 sh 'npm ci'
-                sh 'npx prisma generate'
             }
         }
 
         stage('Tests unitaires') {
             steps {
-                sh 'npx prisma generate --schema=prisma/schema-test.prisma'
                 sh 'npm run test:coverage'
-            }
-            post {
-                always {
-                    junit testResults: 'reports/*.xml', allowEmptyResults: true
-                }
-            }
-        }
-
-        stage('Tests end-to-end') {
-            steps {
-                sh 'npm run test:e2e'
             }
             post {
                 always {
@@ -44,19 +31,12 @@ pipeline {
                     withCredentials([string(credentialsId: 'timotheh-sonar-token', variable: 'SONAR_TOKEN')]) {
                         sh '''
                             npx sonar-scanner \
-                                -Dsonar.projectKey=timotheh-tasklist-backend \
-                                -Dsonar.projectName="timotheh - TaskList Backend" \
-                                -Dsonar.token=$SONAR_TOKEN
+                                -Dsonar.projectKey=timotheh-tasklist-frontend \
+                                -Dsonar.projectName="timotheh - TaskList Frontend" \
+                                -Dsonar.token=$SONAR_TOKEN \
+                                -Dsonar.qualitygate.wait=true
                         '''
                     }
-                }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
                 }
             }
         }
@@ -117,10 +97,10 @@ pipeline {
             cleanWs()
         }
         success {
-            echo 'Pipeline backend terminée avec succès !'
+            echo 'Pipeline frontend terminée avec succès !'
         }
         failure {
-            echo 'Échec de la pipeline backend.'
+            echo 'Échec de la pipeline frontend.'
         }
     }
 }
