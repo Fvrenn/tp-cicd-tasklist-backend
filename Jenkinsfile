@@ -42,7 +42,12 @@ pipeline {
             steps {
                 withSonarQubeEnv('sonarqube-server-1') {
                     withCredentials([string(credentialsId: 'timotheh-sonar-token', variable: 'SONAR_TOKEN')]) {
-                        sh 'npx sonar-scanner -Dsonar.token=$SONAR_TOKEN'
+                        sh '''
+                            npx sonar-scanner \
+                                -Dsonar.projectKey=timotheh-tasklist-backend \
+                                -Dsonar.projectName="timotheh - TaskList Backend" \
+                                -Dsonar.token=$SONAR_TOKEN
+                        '''
                     }
                 }
             }
